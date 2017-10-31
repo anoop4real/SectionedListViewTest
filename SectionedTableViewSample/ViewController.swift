@@ -11,6 +11,7 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet private weak var studentTableView:UITableView!
+    @IBOutlet private weak var sortControl:UISegmentedControl!
     let store = StudentDataStore.shared()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,6 +30,22 @@ class ViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    @IBAction func indexChanged(sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex
+        {
+        case 0:
+            store.sortWith(filter: .byName)
+            studentTableView.reloadData()
+        //show popular view
+        case 1:
+            store.sortWith(filter: .byGrade)
+            studentTableView.reloadData()
+        //show history view
+        default:
+            break;
+        }
     }
 
 

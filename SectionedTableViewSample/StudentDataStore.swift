@@ -19,7 +19,7 @@ class StudentDataStore {
     private var isDataloaded = false
     fileprivate var currentFilter:DataFilter = .byName
     fileprivate var sortedDataByName:[(String, [Student])] = []
-    fileprivate var sortedDataByGrade:[String : [Student]] = [:]
+    fileprivate var sortedDataByGrade:[(String, [Student])] = []
     fileprivate var sortedDataByDOJ:[String : [Student]] = [:]
     
     private static let sharedStore = StudentDataStore()
@@ -112,6 +112,17 @@ class StudentDataStore {
         self.sortedDataByName = dict.sorted(by: {$0.key < $1.key})
         //let sortedDict = dict.sorted(by: {$0.key < $1.key})
     }
+    private func sortDataByGrade(){
+        
+        let names = studentsArray.flatMap({$0.grade})
+        var dict:[String : [Student]] = [:]
+        for key in names{
+            let filrered = studentsArray.filter({$0.grade == key})
+            dict[String(key)] = filrered
+        }
+        self.sortedDataByGrade = dict.sorted(by: {$0.key < $1.key})
+        //let sortedDict = dict.sorted(by: {$0.key < $1.key})
+    }
     
     func sortWith(filter: DataFilter){
         
@@ -120,6 +131,9 @@ class StudentDataStore {
         case DataFilter.byName:
             currentFilter = filter
             sortDataByName()
+        case DataFilter.byGrade:
+            currentFilter = filter
+            sortDataByGrade()
         default:
             break
         }
@@ -134,6 +148,8 @@ extension StudentDataStore: DataStoreProtocol{
         switch currentFilter {
         case DataFilter.byName:
             return self.sortedDataByName.count
+        case DataFilter.byGrade:
+            return self.sortedDataByGrade.count
         default:
             return 0
         }
@@ -169,6 +185,9 @@ extension StudentDataStore: DataStoreProtocol{
         switch currentFilter {
         case DataFilter.byName:
             let data = self.sortedDataByName[section]
+            return data
+        case DataFilter.byGrade:
+            let data = self.sortedDataByGrade[section]
             return data
         default:
             return ("",[])
